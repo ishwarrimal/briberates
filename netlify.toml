@@ -1,0 +1,12 @@
+# Netlify build config for the Next.js app.
+# The Next.js runtime plugin is auto-installed by Netlify, but pinning it and the
+# Node version here keeps builds reproducible.
+
+[build]
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
