@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // pg has dynamic requires; keep it out of the bundler.
+  serverExternalPackages: ["pg"],
 };
 
 export default nextConfig;
