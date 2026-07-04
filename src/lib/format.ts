@@ -23,6 +23,11 @@ export function periodLabel(period: string): string {
   return `${MONTHS[mi]} ${y}`;
 }
 
+export function nowMonthYear(): string {
+  const d = new Date();
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 export const PAID_TO_LABEL: Record<string, string> = {
   "sro-staff": "SRO staff",
   agent: "Registration agent",

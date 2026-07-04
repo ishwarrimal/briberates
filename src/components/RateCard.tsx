@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ConfidenceBadge } from "./ConfidenceBadge";
 import { CorroborateButtons } from "./CorroborateButtons";
+import { RangeBar } from "./RangeBar";
 import { formatINR } from "@/lib/format";
 import type { SubItemRate } from "@/lib/types";
 
@@ -14,15 +15,22 @@ export function RateCard({
   submitHref: string;
 }) {
   const { subItem, stats } = rate;
-  const hasData = stats.median != null;
+  const hasData =
+    stats.median != null &&
+    stats.min != null &&
+    stats.max != null &&
+    stats.q1 != null &&
+    stats.q3 != null;
 
   return (
-    <div className="rounded-xl border border-black/10 p-4 dark:border-white/10">
+    <div className="flex flex-col rounded-xl border border-hairline bg-surface p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold">{subItem.name}</h3>
+          <h3 className="font-display text-lg font-medium leading-snug text-ink">
+            {subItem.name}
+          </h3>
           {subItem.official_fee_note && (
-            <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+            <p className="mt-1 text-xs leading-relaxed text-faint">
               {subItem.official_fee_note}
             </p>
           )}
@@ -31,34 +39,35 @@ export function RateCard({
       </div>
 
       {hasData ? (
-        <div className="mt-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold tabular-nums">
+        <>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-4xl font-semibold tabular-nums tracking-tight text-ink">
               {formatINR(stats.median)}
             </span>
-            <span className="text-xs text-black/50 dark:text-white/50">
-              typical extra paid
+            <span className="text-xs uppercase tracking-wide text-faint">
+              typical extra
             </span>
           </div>
-          <p className="mt-1 text-sm text-black/60 dark:text-white/60">
-            Most people paid{" "}
-            <span className="font-medium text-black/80 dark:text-white/80">
-              {formatINR(stats.q1)} – {formatINR(stats.q3)}
-            </span>{" "}
-            (range {formatINR(stats.min)}–{formatINR(stats.max)})
-          </p>
-        </div>
+
+          <RangeBar
+            min={stats.min!}
+            q1={stats.q1!}
+            median={stats.median!}
+            q3={stats.q3!}
+            max={stats.max!}
+          />
+        </>
       ) : (
-        <div className="mt-3 text-sm text-black/60 dark:text-white/60">
+        <div className="mt-4 flex-1 rounded-lg border border-dashed border-hairline px-4 py-6 text-sm text-muted">
           No reports yet.{" "}
-          <Link href={submitHref} className="font-medium text-amber-600 underline">
+          <Link href={submitHref} className="font-medium text-accent underline">
             Be the first to report
           </Link>
           .
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-hairline pt-4">
         {officeId != null && hasData ? (
           <CorroborateButtons officeId={officeId} subItemId={subItem.id} />
         ) : (
@@ -66,7 +75,7 @@ export function RateCard({
         )}
         <Link
           href={submitHref}
-          className="text-xs font-medium text-amber-600 hover:underline"
+          className="text-xs font-medium text-accent hover:underline"
         >
           Report a rate →
         </Link>

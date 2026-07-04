@@ -9,21 +9,21 @@ export const metadata: Metadata = {
 export default function ThankYou() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-      <h1 className="text-3xl font-bold">Thank you 🙏</h1>
-      <p className="mt-3 text-black/70 dark:text-white/70">
+      <h1 className="font-display text-4xl font-semibold text-ink">Thank you 🙏</h1>
+      <p className="mt-3 leading-relaxed text-muted">
         Your report was submitted anonymously and will appear once it&apos;s
         reviewed. You just made the next person a little less likely to overpay.
       </p>
       <div className="mt-8 flex justify-center gap-3">
         <Link
           href="/"
-          className="rounded-full border border-black/20 px-5 py-2.5 text-sm font-semibold hover:bg-black/5 dark:border-white/25 dark:hover:bg-white/10"
+          className="rounded-full border border-hairline px-5 py-2.5 text-sm font-medium text-ink transition hover:border-accent hover:text-accent"
         >
           Back to home
         </Link>
         <Link
           href="/submit"
-          className="rounded-full bg-amber-500 px-5 py-2.5 text-sm font-semibold text-black hover:bg-amber-400"
+          className="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition hover:opacity-90"
         >
           Report another
         </Link>

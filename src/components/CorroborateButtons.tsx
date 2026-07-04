@@ -44,23 +44,19 @@ export function CorroborateButtons({
 
   if (voted) {
     return (
-      <p className="text-xs text-black/50 dark:text-white/50">
-        Thanks — your input was recorded.
-      </p>
+      <p className="text-xs text-faint">Thanks — your input was recorded.</p>
     );
   }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs text-black/50 dark:text-white/50">
-        Been here?
-      </span>
+      <span className="text-xs text-faint">Been here?</span>
       {OPTIONS.map((o) => (
         <button
           key={o.dir}
           onClick={() => vote(o.dir)}
           disabled={pending}
-          className="rounded-full border border-black/15 px-2.5 py-1 text-xs hover:bg-black/5 disabled:opacity-50 dark:border-white/20 dark:hover:bg-white/10"
+          className="rounded-full border border-hairline px-2.5 py-1 text-xs text-muted transition hover:border-accent hover:text-accent disabled:opacity-50"
         >
           {o.label}
         </button>

@@ -3,17 +3,19 @@ import { SITE } from "@/lib/site";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-black/10 dark:border-white/10">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-lg font-bold tracking-tight">{SITE.name}</span>
-          <span className="hidden text-xs text-black/50 dark:text-white/50 sm:inline">
-            {SITE.tagline}
+    <header className="border-b border-hairline bg-paper/80 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
+        <Link href="/" className="group flex items-baseline gap-2">
+          <span className="font-display text-xl font-semibold tracking-tight text-ink">
+            Bribe<span className="text-accent">Rates</span>
+          </span>
+          <span className="hidden text-[11px] uppercase tracking-[0.14em] text-faint sm:inline">
+            India
           </span>
         </Link>
         <Link
           href="/submit"
-          className="rounded-full bg-amber-500 px-4 py-1.5 text-sm font-semibold text-black hover:bg-amber-400"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:opacity-90"
         >
           Report what you paid
         </Link>

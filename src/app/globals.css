@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
+/* ---- Editorial / civic palette (data-journalism direction) ---- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #faf8f3; /* warm off-white newsprint */
+  --surface: #ffffff; /* cards */
+  --ink: #1c1a15; /* near-black warm */
+  --muted: #6f6a5f; /* secondary text */
+  --faint: #9a9488; /* tertiary / captions */
+  --hairline: rgba(28, 26, 21, 0.12);
+  --accent: #b45309; /* deep ochre — the "extra paid" data hue */
+  --accent-strong: #7c3d06;
+  --accent-soft: rgba(180, 83, 9, 0.16);
+  --good: #3f6212;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #14130f;
+    --surface: #1c1a15;
+    --ink: #eeece4;
+    --muted: #a49e90;
+    --faint: #7c7668;
+    --hairline: rgba(255, 255, 255, 0.14);
+    --accent: #e0a458;
+    --accent-strong: #f2c68d;
+    --accent-soft: rgba(224, 164, 88, 0.18);
+    --good: #a3b86c;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-hairline: var(--hairline);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Small-caps kicker used across editorial headers */
+.kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--accent);
 }

@@ -8,6 +8,7 @@ import {
   getCityById,
   getServiceById,
 } from "@/lib/queries";
+import { nowMonthYear } from "@/lib/format";
 
 type Params = { office: string };
 
@@ -53,39 +54,49 @@ export default async function OfficePage({
     getOfficeRates(office),
   ]);
   const submitHref = `/submit?office=${office.slug}`;
+  const totalReports = rates.reduce((n, r) => n + r.stats.count, 0);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <nav className="text-sm text-black/50 dark:text-white/50">
-        <Link href="/" className="hover:underline">
+    <div className="mx-auto max-w-5xl px-5 py-10">
+      <nav className="text-sm text-muted">
+        <Link href="/" className="hover:text-accent">
           Home
         </Link>{" "}
-        /{" "}
+        <span className="text-faint">/</span>{" "}
         {service && city && (
           <Link
             href={`/${service.slug}/${city.slug}`}
-            className="hover:underline"
+            className="hover:text-accent"
           >
             {service.name} in {city.name}
           </Link>
         )}{" "}
-        / {office.area || office.name}
+        <span className="text-faint">/ {office.area || office.name}</span>
       </nav>
 
-      <h1 className="mt-2 text-2xl font-bold sm:text-3xl">{office.name}</h1>
-      {city && (
-        <p className="mt-1 text-black/60 dark:text-white/60">
-          {office.area && `${office.area}, `}
-          {city.name}, {city.state}
+      <header className="mt-4 border-b border-hairline pb-8">
+        {service && <p className="kicker">{service.name}</p>}
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          {office.name}
+        </h1>
+        {city && (
+          <p className="mt-2 text-muted">
+            {office.area && `${office.area}, `}
+            {city.name}, {city.state}
+          </p>
+        )}
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted">
+          What people report paying <strong className="text-ink">over and
+          above</strong> the official government fee at this office. Anonymous
+          and crowd-reported.
         </p>
-      )}
-      <p className="mt-3 max-w-2xl text-black/70 dark:text-white/70">
-        Amounts below are what people report paying{" "}
-        <strong>over and above</strong> the official government fee at this
-        office. Figures are anonymous and crowd-reported.
-      </p>
+        <p className="mt-4 text-xs uppercase tracking-[0.1em] text-faint">
+          Based on {totalReports} anonymous report{totalReports === 1 ? "" : "s"} ·{" "}
+          {nowMonthYear()}
+        </p>
+      </header>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid gap-5 sm:grid-cols-2">
         {rates.map((rate) => (
           <RateCard
             key={rate.subItem.id}
@@ -96,9 +107,9 @@ export default async function OfficePage({
         ))}
       </div>
 
-      <div className="mt-10 rounded-xl bg-amber-50 p-5 text-sm dark:bg-amber-950/20">
+      <div className="mt-12 rounded-xl border border-hairline bg-surface p-6 text-sm text-muted">
         Been to {office.name}?{" "}
-        <Link href={submitHref} className="font-semibold text-amber-600 underline">
+        <Link href={submitHref} className="font-medium text-accent underline">
           Report what you paid
         </Link>{" "}
         — anonymously. Every report sharpens the number for the next person.

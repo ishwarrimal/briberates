@@ -161,9 +161,9 @@ export function SubmitForm({
   }
 
   const field =
-    "mt-1 w-full rounded-lg border border-black/15 bg-transparent px-3 py-2 dark:border-white/20";
-  const label = "block text-sm font-medium";
-  const newHint = "mt-1 text-xs text-amber-600 dark:text-amber-400";
+    "mt-1 w-full rounded-lg border border-hairline bg-surface px-3 py-2 text-ink outline-none focus:border-accent";
+  const label = "block text-sm font-medium text-ink";
+  const newHint = "mt-1 text-xs text-accent";
 
   return (
     <form onSubmit={onSubmit} className="mt-6 space-y-5">
@@ -286,7 +286,7 @@ export function SubmitForm({
             value={extraPaid}
             onChange={(e) => setExtraPaid(e.target.value)}
           />
-          <p className="mt-1 text-xs text-black/50 dark:text-white/50">
+          <p className="mt-1 text-xs text-faint">
             Over and above the official fee.
           </p>
         </div>
@@ -355,11 +355,11 @@ export function SubmitForm({
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-amber-400 disabled:opacity-60"
+        className="rounded-full bg-ink px-6 py-2.5 text-sm font-medium text-paper transition hover:opacity-90 disabled:opacity-60"
       >
         {submitting ? "Submitting…" : "Submit anonymously"}
       </button>
-      <p className="text-xs text-black/50 dark:text-white/50">
+      <p className="text-xs text-faint">
         No login, no name, no email. Anything new you add is reviewed before it
         appears publicly.
       </p>

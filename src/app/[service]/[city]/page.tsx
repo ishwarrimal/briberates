@@ -7,6 +7,7 @@ import {
   getCityBySlug,
   getServiceCityRates,
 } from "@/lib/queries";
+import { nowMonthYear } from "@/lib/format";
 
 type Params = { service: string; city: string };
 
@@ -48,6 +49,7 @@ export default async function ServiceCityPage({
 
   const { offices, rates } = await getServiceCityRates(service.id, city.id);
   const submitHref = `/submit?service=${service.slug}&city=${city.slug}`;
+  const totalReports = rates.reduce((n, r) => n + r.stats.count, 0);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,59 +71,70 @@ export default async function ServiceCityPage({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-5 py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <nav className="text-sm text-black/50 dark:text-white/50">
-        <Link href="/" className="hover:underline">
+      <nav className="text-sm text-muted">
+        <Link href="/" className="hover:text-accent">
           Home
         </Link>{" "}
-        / {service.name} / {city.name}
+        <span className="text-faint">/ {service.name} / {city.name}</span>
       </nav>
 
-      <h1 className="mt-2 text-2xl font-bold sm:text-3xl">
-        {service.name} charges in {city.name}
-      </h1>
-      <p className="mt-2 max-w-2xl text-black/70 dark:text-white/70">
-        What people report paying <strong>over and above</strong> official
-        government fees for {service.name.toLowerCase()} in {city.name},{" "}
-        {city.state}. {service.official_fee_note}
-      </p>
+      <header className="mt-4 border-b border-hairline pb-8">
+        <p className="kicker">{service.name}</p>
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          {service.name} charges in {city.name}
+        </h1>
+        <p className="mt-3 max-w-2xl leading-relaxed text-muted">
+          What people report paying <strong className="text-ink">over and
+          above</strong> official government fees for{" "}
+          {service.name.toLowerCase()} in {city.name}, {city.state}.
+        </p>
+        <p className="mt-4 text-xs uppercase tracking-[0.1em] text-faint">
+          Based on {totalReports} anonymous report{totalReports === 1 ? "" : "s"} ·{" "}
+          {nowMonthYear()}
+        </p>
+      </header>
 
       {/* City-wide aggregates */}
-      <h2 className="mt-8 text-lg font-semibold">Typical extra, across {city.name}</h2>
-      <div className="mt-3 grid gap-4 sm:grid-cols-2">
+      <h2 className="mt-10 font-display text-xl font-medium text-ink">
+        Typical extra, across {city.name}
+      </h2>
+      <div className="mt-4 grid gap-5 sm:grid-cols-2">
         {rates.map((rate) => (
           <RateCard key={rate.subItem.id} rate={rate} submitHref={submitHref} />
         ))}
       </div>
 
       {/* Offices */}
-      <h2 className="mt-10 text-lg font-semibold">
-        By Sub-Registrar Office ({offices.length})
+      <h2 className="mt-12 font-display text-xl font-medium text-ink">
+        By office <span className="text-faint">({offices.length})</span>
       </h2>
-      <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+      <p className="mt-1 text-sm text-muted">
         Rates vary by office. Pick yours for office-specific figures.
       </p>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+      <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
         {offices.map((office) => (
           <Link
             key={office.id}
             href={`/office/${office.slug}`}
-            className="flex items-center justify-between rounded-lg border border-black/10 px-4 py-3 hover:bg-black/5 dark:border-white/10 dark:hover:bg-white/10"
+            className="group flex items-center justify-between rounded-lg border border-hairline bg-surface px-4 py-3 transition hover:border-accent"
           >
-            <span className="font-medium">{office.name}</span>
-            <span className="text-sm text-black/40 dark:text-white/40">→</span>
+            <span className="font-medium text-ink">{office.name}</span>
+            <span className="text-accent opacity-0 transition group-hover:opacity-100">
+              →
+            </span>
           </Link>
         ))}
       </div>
 
-      <div className="mt-10 rounded-xl bg-amber-50 p-5 text-sm dark:bg-amber-950/20">
+      <div className="mt-12 rounded-xl border border-hairline bg-surface p-6 text-sm text-muted">
         Paid for {service.name.toLowerCase()} in {city.name} recently?{" "}
-        <Link href={submitHref} className="font-semibold text-amber-600 underline">
+        <Link href={submitHref} className="font-medium text-accent underline">
           Add your figures
         </Link>{" "}
         — anonymously, in under a minute. It helps the next person.

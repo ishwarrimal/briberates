@@ -29,8 +29,11 @@ export default async function SubmitPage({
           defer
         />
       )}
-      <h1 className="text-2xl font-bold sm:text-3xl">Report what you paid</h1>
-      <p className="mt-2 text-black/70 dark:text-white/70">
+      <p className="kicker">Anonymous · No login</p>
+      <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink">
+        Report what you paid
+      </h1>
+      <p className="mt-3 leading-relaxed text-muted">
         Help the next person know the going rate. It&apos;s anonymous — no login,
         no name, no email — and takes under a minute. Reports are reviewed before
         they go live.
