@@ -452,6 +452,140 @@ export async function getSubmitFormData(): Promise<SubmitFormData> {
   return { services, cities, offices, subItems };
 }
 
+// ---- directory / navigation ----
+
+export type NavData = {
+  services: { slug: string; name: string }[];
+  cities: { slug: string; name: string; state: string }[];
+};
+
+export async function getNavData(): Promise<NavData> {
+  const [services, cities] = await Promise.all([
+    query<{ slug: string; name: string }>(
+      "SELECT slug, name FROM services WHERE status = 'approved' ORDER BY name",
+    ),
+    query<{ slug: string; name: string; state: string }>(
+      "SELECT slug, name, state FROM cities WHERE status = 'approved' ORDER BY name",
+    ),
+  ]);
+  return { services, cities };
+}
+
+export type DepartmentEntry = {
+  id: number;
+  slug: string;
+  name: string;
+  short_desc: string;
+  city_count: number;
+  office_count: number;
+};
+
+export function getDepartmentsDirectory(): Promise<DepartmentEntry[]> {
+  return query<DepartmentEntry>(
+    `SELECT sv.id, sv.slug, sv.name, sv.short_desc,
+            COUNT(DISTINCT o.city_id)::int AS city_count,
+            COUNT(o.id)::int AS office_count
+     FROM services sv
+     LEFT JOIN offices o ON o.service_id = sv.id AND o.status = 'approved'
+     WHERE sv.status = 'approved'
+     GROUP BY sv.id
+     ORDER BY sv.name`,
+  );
+}
+
+export type CityEntry = {
+  id: number;
+  slug: string;
+  name: string;
+  state: string;
+  office_count: number;
+  dept_count: number;
+};
+
+export async function getLocationsByState(): Promise<
+  { state: string; cities: CityEntry[] }[]
+> {
+  const rows = await query<CityEntry>(
+    `SELECT c.id, c.slug, c.name, c.state,
+            COUNT(DISTINCT o.id)::int AS office_count,
+            COUNT(DISTINCT o.service_id)::int AS dept_count
+     FROM cities c
+     LEFT JOIN offices o ON o.city_id = c.id AND o.status = 'approved'
+     WHERE c.status = 'approved'
+     GROUP BY c.id
+     ORDER BY c.state, c.name`,
+  );
+  const byState = new Map<string, CityEntry[]>();
+  for (const r of rows) {
+    const list = byState.get(r.state) ?? [];
+    list.push(r);
+    byState.set(r.state, list);
+  }
+  return [...byState.entries()].map(([state, cities]) => ({ state, cities }));
+}
+
+/** Cities where a given department has at least one office. */
+export function getDepartmentCities(serviceId: number): Promise<CityEntry[]> {
+  return query<CityEntry>(
+    `SELECT c.id, c.slug, c.name, c.state,
+            COUNT(o.id)::int AS office_count,
+            1 AS dept_count
+     FROM cities c
+     JOIN offices o ON o.city_id = c.id AND o.service_id = $1 AND o.status = 'approved'
+     WHERE c.status = 'approved'
+     GROUP BY c.id
+     ORDER BY c.state, c.name`,
+    [serviceId],
+  );
+}
+
+/** Departments (with their offices) available in a given city. */
+export async function getCityDepartments(
+  cityId: number,
+): Promise<
+  { service: { slug: string; name: string }; offices: { slug: string; name: string; area: string }[] }[]
+> {
+  const rows = await query<{
+    svc_slug: string;
+    svc_name: string;
+    off_slug: string;
+    off_name: string;
+    area: string;
+  }>(
+    `SELECT sv.slug AS svc_slug, sv.name AS svc_name,
+            o.slug AS off_slug, o.name AS off_name, o.area
+     FROM offices o
+     JOIN services sv ON sv.id = o.service_id
+     WHERE o.city_id = $1 AND o.status = 'approved' AND sv.status = 'approved'
+     ORDER BY sv.name, o.name`,
+    [cityId],
+  );
+  const grouped = new Map<
+    string,
+    { service: { slug: string; name: string }; offices: { slug: string; name: string; area: string }[] }
+  >();
+  for (const r of rows) {
+    const entry =
+      grouped.get(r.svc_slug) ??
+      { service: { slug: r.svc_slug, name: r.svc_name }, offices: [] };
+    entry.offices.push({ slug: r.off_slug, name: r.off_name, area: r.area });
+    grouped.set(r.svc_slug, entry);
+  }
+  return [...grouped.values()];
+}
+
+export function getAllCitySlugs(): Promise<string[]> {
+  return query<{ slug: string }>(
+    "SELECT slug FROM cities WHERE status = 'approved'",
+  ).then((rows) => rows.map((r) => r.slug));
+}
+
+export function getAllServiceSlugs(): Promise<string[]> {
+  return query<{ slug: string }>(
+    "SELECT slug FROM services WHERE status = 'approved'",
+  ).then((rows) => rows.map((r) => r.slug));
+}
+
 // ---- sitemap helpers (approved only) ----
 
 export async function getAllOfficeSlugs(): Promise<string[]> {
